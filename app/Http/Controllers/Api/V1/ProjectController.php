@@ -38,12 +38,23 @@ class ProjectController extends Controller
         ]);
     }
 
-    $cloudinary = new CloudinaryService();
+//     $cloudinary = new CloudinaryService();
 
-$result = $cloudinary->upload(
-    $request->file('image')->getRealPath(),
-    'portfolio/projects'
-);
+// $result = $cloudinary->upload(
+//     $request->file('image')->getRealPath(),
+//     'portfolio/projects'
+// );
+
+    public function store(StoreProjectRequest $request): JsonResponse
+    {
+        $project = $this->projectService->createProject($request->validated());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Project created successfully',
+            'data' => new ProjectResource($project),
+        ]);
+    }
 
     public function update(UpdateProjectRequest $request, $id): JsonResponse
     {
