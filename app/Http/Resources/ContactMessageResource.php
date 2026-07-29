@@ -18,6 +18,7 @@ class ContactMessageResource extends JsonResource
             'message' => $this->message,
             'is_read' => (bool) $this->is_read,
             'read_at' => $this->read_at?->toIso8601String(),
+            'archived' => (bool) $this->archived,
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

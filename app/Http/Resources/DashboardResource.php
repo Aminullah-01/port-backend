@@ -9,15 +9,17 @@ class DashboardResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $data = is_array($this->resource) ? $this->resource : (array) $this->resource;
+
         return [
-            'total_projects' => $this['total_projects'] ?? 0,
-            'total_skills' => $this['total_skills'] ?? 0,
-            'total_services' => $this['total_services'] ?? 0,
-            'total_certificates' => $this['total_certificates'] ?? 0,
-            'total_messages' => $this['total_messages'] ?? 0,
-            'total_blogs' => $this['total_blogs'] ?? 0,
-            'unread_messages' => $this['unread_messages'] ?? 0,
-            'featured_projects' => $this['featured_projects'] ?? 0,
+            'total_projects' => $data['total_projects'] ?? 0,
+            'total_skills' => $data['total_skills'] ?? 0,
+            'total_services' => $data['total_services'] ?? 0,
+            'total_certificates' => $data['total_certificates'] ?? 0,
+            'total_messages' => $data['total_messages'] ?? 0,
+            'total_blogs' => $data['total_blogs'] ?? 0,
+            'unread_messages' => $data['unread_messages'] ?? 0,
+            'featured_projects' => $data['featured_projects'] ?? 0,
         ];
     }
 }

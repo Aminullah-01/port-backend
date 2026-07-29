@@ -23,6 +23,7 @@ class StoreBlogRequest extends FormRequest
             'status' => ['nullable', 'string', 'in:draft,published'],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string'],
+            'published_at' => ['nullable', 'date'],
         ];
     }
 }

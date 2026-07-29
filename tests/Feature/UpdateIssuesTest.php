@@ -6,9 +6,9 @@ use App\Models\Certificate;
 use App\Models\Profile;
 use App\Models\Project;
 use App\Models\User;
+use App\Services\FileUploadService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class UpdateIssuesTest extends TestCase
@@ -25,6 +25,17 @@ class UpdateIssuesTest extends TestCase
 
         $this->admin = User::first();
         $this->token = $this->admin->createToken('test-token')->plainTextToken;
+    }
+
+    protected function mockCloudinaryUpload(): void
+    {
+        $mock = $this->createMock(FileUploadService::class);
+        $mock->method('uploadFile')
+            ->willReturnCallback(function ($file, string $folder = 'uploads', ?string $existingPath = null) {
+                return $existingPath ?? 'https://res.cloudinary.com/test/image/upload/' . $folder . '/test-file.pdf';
+            });
+        $mock->method('deleteFile');
+        $this->app->instance(FileUploadService::class, $mock);
     }
 
     /** Issue 1: Test Project Update via POST _method=PUT and PUT methods */
@@ -86,12 +97,12 @@ class UpdateIssuesTest extends TestCase
     /** Issue 3 & 4: Test Profile and Resume Upload via POST _method=PUT and PUT methods */
     public function test_can_update_profile_and_upload_resume_with_method_spoofing(): void
     {
-        Storage::fake('public');
+        $this->mockCloudinaryUpload();
 
-        $resumeFile = UploadedFile::fake()->create('cv.pdf', 100, 'application/pdf');
+        $resumeFile = UploadedFile::fake()->create('cv.pdf', 100);
 
         $response = $this->withHeader('Authorization', "Bearer {$this->token}")
-            ->postJson('/api/v1/profile', [
+            ->post('/api/v1/profile', [
                 'first_name' => 'Aminu Updated',
                 'last_name' => 'Abubakar',
                 'headline' => 'Senior Full Stack Engineer',

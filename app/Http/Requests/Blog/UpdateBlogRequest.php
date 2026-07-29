@@ -36,6 +36,7 @@ class UpdateBlogRequest extends FormRequest
             'category' => ['nullable', 'string', 'max:255'],
             'status' => ['nullable', 'string', 'in:draft,published'],
             'tags' => ['nullable'],
+            'published_at' => ['nullable', 'date'],
         ];
     }
 }

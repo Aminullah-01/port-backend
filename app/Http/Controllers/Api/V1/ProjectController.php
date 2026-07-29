@@ -10,7 +10,6 @@ use App\Models\Project;
 use App\Services\ProjectService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Services\CloudinaryService;
 
 class ProjectController extends Controller
 {
@@ -38,13 +37,6 @@ class ProjectController extends Controller
         ]);
     }
 
-//     $cloudinary = new CloudinaryService();
-
-// $result = $cloudinary->upload(
-//     $request->file('image')->getRealPath(),
-//     'portfolio/projects'
-// );
-
     public function store(StoreProjectRequest $request): JsonResponse
     {
         $project = $this->projectService->createProject($request->validated());
@@ -53,7 +45,7 @@ class ProjectController extends Controller
             'success' => true,
             'message' => 'Project created successfully',
             'data' => new ProjectResource($project),
-        ]);
+        ], 201);
     }
 
     public function update(UpdateProjectRequest $request, $id): JsonResponse

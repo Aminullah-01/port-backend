@@ -13,12 +13,12 @@ class FileUploadService
     {
         $this->cloudinary = new Cloudinary([
             'cloud' => [
-                'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
-                'api_key' => env('CLOUDINARY_API_KEY'),
-                'api_secret' => env('CLOUDINARY_API_SECRET'),
+                'cloud_name' => config('services.cloudinary.cloud_name'),
+                'api_key' => config('services.cloudinary.api_key'),
+                'api_secret' => config('services.cloudinary.api_secret'),
             ],
             'url' => [
-                'secure' => true,
+                'secure' => config('services.cloudinary.secure', true),
             ],
         ]);
     }
@@ -34,8 +34,6 @@ class FileUploadService
         }
 
         if ($file instanceof UploadedFile) {
-
-            // Delete old file from Cloudinary
             if ($existingPath) {
                 $this->deleteFile($existingPath);
             }
@@ -45,7 +43,7 @@ class FileUploadService
                 ->upload(
                     $file->getRealPath(),
                     [
-                        'folder' => "portfolio/{$folder}"
+                        'folder' => "portfolio/{$folder}",
                     ]
                 );
 
@@ -62,34 +60,37 @@ class FileUploadService
         }
 
         try {
+            $publicId = $this->resolvePublicId($url);
 
-            // Example URL:
-            // https://res.cloudinary.com/demo/image/upload/v123456/portfolio/projects/image.jpg
-
-            $parts = parse_url($url);
-
-            if (!isset($parts['path'])) {
-                return;
+            if ($publicId) {
+                $this->cloudinary->uploadApi()->destroy($publicId);
             }
-
-            $path = $parts['path'];
-
-            $path = preg_replace('#^/[^/]+/image/upload/#', '', $path);
-
-            $path = preg_replace('#v\d+/#', '', $path);
-
-            $publicId = pathinfo($path, PATHINFO_DIRNAME)
-                . '/'
-                . pathinfo($path, PATHINFO_FILENAME);
-
-            $this->cloudinary
-                ->uploadApi()
-                ->destroy($publicId);
-
         } catch (\Exception $e) {
-
             report($e);
-
         }
+    }
+
+    private function resolvePublicId(string $url): ?string
+    {
+        $parts = parse_url($url);
+        if (!isset($parts['path'])) {
+            return null;
+        }
+
+        $path = $parts['path'];
+
+        $path = preg_replace('#^/[^/]+/image/upload/#', '', $path);
+        $path = preg_replace('#v\d+/#', '', $path);
+
+        $path = ltrim($path, '/');
+
+        $publicId = pathinfo($path, PATHINFO_DIRNAME);
+        if ($publicId === '.') {
+            $publicId = pathinfo($path, PATHINFO_FILENAME);
+        } else {
+            $publicId .= '/' . pathinfo($path, PATHINFO_FILENAME);
+        }
+
+        return $publicId;
     }
 }
