@@ -47,10 +47,52 @@ class ProfileService
             }
 
             if (isset($data['resume'])) {
-                $data['resume_url'] = $this->fileUploadService->uploadFile($data['resume'], 'resumes', $profile->resume_url);
+                if ($data['resume'] instanceof \Illuminate\Http\UploadedFile) {
+                    $file = $data['resume'];
+                    $originalName = $file->getClientOriginalName();
+                    $extension = strtolower($file->getClientOriginalExtension());
+                    $mime = match ($extension) {
+                        'pdf' => 'application/pdf',
+                        'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        'doc' => 'application/msword',
+                        default => $file->getClientMimeType() ?: 'application/octet-stream',
+                    };
+
+                    $data['resume_filename'] = $originalName;
+                    $data['resume_mime'] = $mime;
+                    $data['resume_size'] = $file->getSize();
+                    $data['resume_data'] = base64_encode(file_get_contents($file->getRealPath()));
+                    $data['resume_url'] = url('/api/v1/profile/resume/download');
+
+                    try {
+                        $this->fileUploadService->uploadFile($file, 'resumes', $profile->resume_url);
+                    } catch (\Throwable) {
+                        // ignore Cloudinary errors since file is persisted in database
+                    }
+                } elseif (is_string($data['resume'])) {
+                    $data['resume_url'] = $data['resume'];
+                }
                 unset($data['resume']);
             } elseif (isset($data['resume_url'])) {
-                $data['resume_url'] = $this->fileUploadService->uploadFile($data['resume_url'], 'resumes', $profile->resume_url);
+                if ($data['resume_url'] instanceof \Illuminate\Http\UploadedFile) {
+                    $file = $data['resume_url'];
+                    $originalName = $file->getClientOriginalName();
+                    $extension = strtolower($file->getClientOriginalExtension());
+                    $mime = match ($extension) {
+                        'pdf' => 'application/pdf',
+                        'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        'doc' => 'application/msword',
+                        default => $file->getClientMimeType() ?: 'application/octet-stream',
+                    };
+
+                    $data['resume_filename'] = $originalName;
+                    $data['resume_mime'] = $mime;
+                    $data['resume_size'] = $file->getSize();
+                    $data['resume_data'] = base64_encode(file_get_contents($file->getRealPath()));
+                    $data['resume_url'] = url('/api/v1/profile/resume/download');
+                } else {
+                    $data['resume_url'] = $data['resume_url'];
+                }
             }
 
             $profile->update($data);

@@ -25,6 +25,8 @@ Route::prefix('v1')->group(function () {
 
     // Public endpoints
     Route::get('/profile', [ProfileController::class, 'show']);
+    Route::get('/profile/resume/download', [ProfileController::class, 'downloadResume']);
+    Route::get('/profile/resume/view', [ProfileController::class, 'viewResume']);
     Route::get('/settings', [SettingController::class, 'show']);
 
     Route::get('/projects', [ProjectController::class, 'index']);

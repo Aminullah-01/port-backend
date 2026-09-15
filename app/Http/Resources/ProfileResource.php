@@ -22,7 +22,15 @@ class ProfileResource extends JsonResource
             'headline' => $this->headline,
             'bio' => $this->bio,
             'avatar' => $this->resolveUrl($this->avatar),
-            'resume_url' => $this->resolveUrl($this->resume_url),
+            'resume_url' => $this->resume_data
+                ? url('/api/v1/profile/resume/download')
+                : $this->resolveUrl($this->resume_url),
+            'resume_view_url' => $this->resume_data
+                ? url('/api/v1/profile/resume/view')
+                : $this->resolveUrl($this->resume_url),
+            'resume_filename' => $this->resume_filename,
+            'resume_mime' => $this->resume_mime,
+            'resume_size' => $this->resume_size,
             'website' => $this->website,
             'github_url' => $this->github_url,
             'linkedin_url' => $this->linkedin_url,

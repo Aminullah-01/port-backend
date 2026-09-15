@@ -21,6 +21,10 @@ class Profile extends Model
         'bio',
         'avatar',
         'resume_url',
+        'resume_filename',
+        'resume_mime',
+        'resume_size',
+        'resume_data',
         'website',
         'github_url',
         'linkedin_url',
@@ -28,6 +32,10 @@ class Profile extends Model
         'facebook_url',
         'whatsapp_url',
         'location',
+    ];
+
+    protected $hidden = [
+        'resume_data',
     ];
 
     protected $appends = ['full_name'];
