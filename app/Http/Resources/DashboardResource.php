@@ -20,6 +20,12 @@ class DashboardResource extends JsonResource
             'total_blogs' => $data['total_blogs'] ?? 0,
             'unread_messages' => $data['unread_messages'] ?? 0,
             'featured_projects' => $data['featured_projects'] ?? 0,
+            'visitors_7d' => $data['visitors_7d'] ?? 0,
+            'total_visitors' => $data['total_visitors'] ?? 0,
+            'cv_downloads' => $data['cv_downloads'] ?? 0,
+            'visitor_chart' => $data['visitor_chart'] ?? [],
+            'category_distribution' => $data['category_distribution'] ?? [],
+            'recent_activities' => $data['recent_activities'] ?? [],
         ];
     }
 }

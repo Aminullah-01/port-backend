@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AnalyticsController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BlogController;
 use App\Http\Controllers\Api\V1\CertificateController;
@@ -17,6 +18,10 @@ Route::prefix('v1')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
+    // Analytics tracking (public)
+    Route::post('/analytics/visit', [AnalyticsController::class, 'trackVisit']);
+    Route::post('/analytics/cv-download', [AnalyticsController::class, 'trackCvDownload']);
 
     // Public endpoints
     Route::get('/profile', [ProfileController::class, 'show']);
