@@ -56,7 +56,7 @@ class ProfileService
             $profile->update($data);
 
             if ($profile->user_id && (isset($data['first_name']) || isset($data['email']))) {
-                $profile->user->update([
+                $profile->user?->update([
                     'name' => $profile->full_name,
                     'email' => $profile->email,
                 ]);
